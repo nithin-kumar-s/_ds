@@ -1,0 +1,32 @@
+# Import necessary libraries
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+import pandas as pd
+
+# Load your market basket dataset
+# Replace 'your_dataset.csv' with your actual dataset file
+df = pd.read_csv('your_dataset.csv')
+
+# Encode the dataset (convert items to binary form)
+# You can use one-hot encoding for this purpose
+df_encoded = pd.get_dummies(df)
+
+# Apply the Apriori algorithm to find frequent item sets based on support
+min_support = 0.05  # Set your minimum support threshold here
+frequent_item_sets = apriori(df_encoded, min_support=min_support, use_colnames=True)
+
+# Find association rules based on confidence
+min_confidence = 0.5  # Set your minimum confidence threshold here
+rules = association_rules(frequent_item_sets, metric='confidence', min_threshold=min_confidence)
+
+# Sort rules by support and confidence values
+sorted_rules = rules.sort_values(by=['support', 'confidence'], ascending=False)
+
+# Display the best rules based on support and confidence
+print("Best Rules based on Support and Confidence:")
+print(sorted_rules[['antecedents', 'consequents', 'support', 'confidence']])
+
+# Optionally, you can calculate and display Lift as well
+sorted_rules_with_lift = sorted_rules.sort_values(by=['lift'], ascending=False)
+print("\nBest Rules based on Lift:")
+print(sorted_rules_with_lift[['antecedents', 'consequents', 'support', 'confidence', 'lift']])
