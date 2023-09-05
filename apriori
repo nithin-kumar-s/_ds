@@ -1,0 +1,18 @@
+import pandas as pd
+from mlxtend.frequent_patterns import apriori
+from mlxtend.frequent_patterns import association_rules
+data=pd.read_csv('bask.csv')
+data.info()
+
+data.isna().sum()
+data.describe()
+data=data.fillna('')
+print(data)
+df=pd.DataFrame(data)
+df
+df.isna().sum()
+oht = pd.get_dummies(df)
+frequent_item_sets = apriori(oht, min_support=0.4, use_colnames=True)
+association_rules_df = association_rules(frequent_item_sets, metric='confidence', min_threshold=0.7)
+association_rules_df
+frequent_item_sets
