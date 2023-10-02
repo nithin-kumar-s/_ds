@@ -1,0 +1,205 @@
+# PROGRAM 1
+
+Create tables
+
+```sql
+CREATE TABLE department (
+d_no INT PRIMARY KEY,
+name VARCHAR(255) NOT NULL
+);
+
+CREATE TABLE employee (
+ssn INT PRIMARY KEY,
+f_name VARCHAR(255) NOT NULL,
+l_name VARCHAR(255) NOT NULL,
+gender CHAR(1) NOT NULL,
+address VARCHAR(255),
+dob DATE NOT NULL,
+salary DECIMAL(10, 2) NOT NULL,
+supervisor INT,
+d_no INT,
+FOREIGN KEY (supervisor) REFERENCES employee(ssn),
+FOREIGN KEY (d_no) REFERENCES department(d_no)
+);
+
+CREATE TABLE manages (
+m_essn INT,
+manager_start_date DATE,
+d_no INT,
+PRIMARY KEY (m_essn, manager_start_date, d_no),
+FOREIGN KEY (m_essn) REFERENCES employee(ssn),
+FOREIGN KEY (d_no) REFERENCES department(d_no)
+);
+
+CREATE TABLE department_location (
+d_no INT,
+location VARCHAR(255),
+PRIMARY KEY (d_no, location),
+FOREIGN KEY (d_no) REFERENCES department(d_no)
+);
+
+CREATE TABLE project (
+p_no INT PRIMARY KEY,
+d_no INT,
+p_name VARCHAR(255) NOT NULL,
+worth DECIMAL(10, 2),
+end_date DATE,
+FOREIGN KEY (d_no) REFERENCES department(d_no)
+);
+
+CREATE TABLE project_location (
+p_no INT,
+location VARCHAR(255),
+FOREIGN KEY (p_no) REFERENCES project(p_no)
+);
+
+CREATE TABLE works_on (
+e_ssn INT,
+p_no INT,
+hrs DECIMAL(5, 2) NOT NULL,
+PRIMARY KEY (e_ssn, p_no),
+FOREIGN KEY (e_ssn) REFERENCES employee(ssn),
+FOREIGN KEY (p_no) REFERENCES project(p_no)
+);
+
+CREATE TABLE dependent (
+e_ssn INT,
+name VARCHAR(255) NOT NULL,
+sex CHAR(1) NOT NULL,
+dob DATE NOT NULL,
+d_no INT,
+relationship VARCHAR(255),
+FOREIGN KEY (e_ssn) REFERENCES employee(ssn),
+FOREIGN KEY (d_no) REFERENCES department(d_no)
+);
+```
+
+- - Department Table
+INSERT INTO department (d_no, name) VALUES
+(1, 'Finance'),
+(2, 'R&D'),
+(3, 'Marketing');
+- - Employee Table
+INSERT INTO employee (ssn, f_name, l_name, gender, address, dob, salary, supervisor, d_no) VALUES
+(101, 'John', 'Doe', 'M', '123 Main St', '1980-05-15', 75000.00, NULL, 1),
+(102, 'Jane', 'Smith', 'F', '456 Elm St', '1982-03-20', 80000.00, NULL, 1),
+(103, 'Robert', 'Johnson', 'M', '789 Oak St', '1990-07-10', 90000.00, 101, 1),
+(104, 'Emily', 'Wilson', 'F', '101 Pine St', '1985-12-30', 70000.00, 101, 2),
+(105, 'Michael', 'Brown', 'M', '222 Cedar St', '1988-09-25', 85000.00, 101, 2),
+(106, 'Sarah', 'Davis', 'F', '333 Maple St', '1995-04-12', 72000.00, 101, 3);
+- - Manages Table
+INSERT INTO manages (m_essn, manager_start_date, d_no) VALUES
+(101, '2020-01-01', 1),
+(101, '2021-06-01', 2),
+(102, '2022-02-01', 1);
+- - Department Location Table
+INSERT INTO department_location (d_no, location) VALUES
+(1, 'New York'),
+(2, 'San Francisco'),
+(3, 'Los Angeles');
+- - Project Table
+INSERT INTO project (p_no, d_no, p_name, worth, end_date) VALUES
+(501, 1, 'Financial Analysis', 150000.00, '2023-12-31'),
+(502, 2, 'Research Project', 120000.00, '2024-06-30'),
+(503, 1, 'Budget Planning', 180000.00, '2023-11-30'),
+(504, 3, 'Marketing Campaign', 90000.00, '2023-10-31');
+- - Project Location Table
+INSERT INTO project_location (p_no, location) VALUES
+(501, 'New York'),
+(502, 'San Francisco'),
+(503, 'Chicago'),
+(504, 'Los Angeles');
+- - Works On Table
+INSERT INTO works_on (e_ssn, p_no, hrs) VALUES
+(103, 501, 40.00),
+(104, 502, 35.00),
+(105, 503, 42.00),
+(106, 504, 30.00),
+(103, 503, 38.00);
+- - Dependent Table
+INSERT INTO dependent (e_ssn, name, sex, dob, d_no, relationship) VALUES
+(103, 'Emma', 'F', '2010-03-10', 1, 'Child'),
+(103, 'Oliver', 'M', '2015-07-20', 1, 'Child'),
+(104, 'Sophia', 'F', '2009-05-05', 2, 'Child'),
+(105, 'Ethan', 'M', '2013-12-15', 2, 'Child'),
+(106, 'Ava', 'F', '2018-02-28', 3, 'Child');
+1. List the f_Name, l_Name, dept_Name of the employer who draws a salary greater than the average salary of employees working for the Finance department.
+
+SELECT e.f_name, e.l_name, (SELECT name FROM department WHERE d_no = e.d_no) AS dept_Name
+FROM employee e
+WHERE e.salary > (
+SELECT AVG(salary)
+FROM employee
+WHERE d_no = 1
+);
+
+1. List the name and department of the employer who is currently working on more than two project controlled by R&D department.
+
+insert into project values(505,2, 'IOT', 1000001.00, '2023-12-31');
+insert into works_on values(105,505,40.00);
+insert into project values(506,2, 'livestock', 1000002.00, '2023-12-31');
+insert into project values(506,2, 'livestock', 1000002.00, '2023-12-31');
+
+SELECT e.f_name, e.l_name, [d.name](http://d.name/) AS dept_Name
+FROM employee e, works_on w, project p, department d
+WHERE e.ssn = w.e_ssn
+AND w.p_no = p.p_no
+AND p.d_no = d.d_no
+AND [d.name](http://d.name/) = 'R&D'
+GROUP BY e.ssn, e.f_name, e.l_name, [d.name](http://d.name/)
+HAVING COUNT(w.p_no) >= 2;
+
+1. List all the ongoing projects controlled by all the departments.
+
+SELECT [d.name](http://d.name/) AS dept_Name, p.p_name AS project_name
+FROM department d, project p
+WHERE d.d_no = p.d_no
+AND (p.end_date > CURDATE() OR p.end_date IS NULL);
+
+1. Give the details of the supervisor who is supervising more than 3 employees who have completed at least one project.
+
+SELECT DISTINCT s.ssn AS supervisor_ssn, s.f_name AS supervisor_f_name, s.l_name AS supervisor_l_name
+FROM employee s
+WHERE s.ssn IN (
+SELECT supervisor
+FROM employee e
+WHERE e.ssn IN (SELECT DISTINCT e_ssn FROM works_on)
+GROUP BY supervisor
+HAVING COUNT(*) > 3
+);
+
+1. List the name of the dependents employee who has completed a total_projects worth 10L.
+
+update project set worth=1000000 where p_no=503;
+
+SELECT [d.name](http://d.name/) AS dept_Name, e.f_name AS employee_f_name, e.l_name AS employee_l_name, [d2.name](http://d2.name/) AS dependent_name
+FROM employee e, works_on w, project p, department d, dependent d2
+WHERE e.ssn = w.e_ssn
+AND w.p_no = p.p_no
+AND e.d_no = d.d_no
+AND e.ssn = d2.e_ssn
+AND p.worth >= 1000000;
+
+1. List the department and employee details whose project is in more than one city.
+
+INSERT INTO project_location (p_no, location) VALUES (501, 'Chicago');
+
+SELECT [d.name](http://d.name/) AS dept_Name, e.f_name, e.l_name, p.p_name
+FROM employee e, project p, department d
+WHERE e.ssn IN (
+SELECT e_ssn
+FROM works_on w
+WHERE w.p_no IN (
+SELECT p_no
+FROM project_location
+GROUP BY p_no
+HAVING COUNT(DISTINCT location) > 1
+)
+)
+AND e.d_no = d.d_no
+AND p.p_no = (
+SELECT DISTINCT p_no
+FROM project_location
+GROUP BY p_no
+HAVING COUNT(DISTINCT location) > 1
+);
