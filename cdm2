@@ -1,0 +1,345 @@
+# PROGRAM 2
+
+India is a leading country in producing renewable solar energy. There are two types
+of solar panels available in Indian market namely, monocrystalline and
+polycrystalline solar panel which are installed on the roof. Both the type of panel is
+available for domestic and commercial usage. The installation charges for
+monocrystalline panels are around 40,000 and polycrystalline panels around
+60,000.The warranty of monocrystalline and polycrystalline panels is 15 years and 25
+years respectively from the date of installation. Each panel is identified by a unique
+photovoltaic module (PV module). These panels are installed for both domestic
+(houses) and commercial (offices, hotels, hostels etc) usage. The installations are done
+by authorised vendors who also are the distributors of the panels. The vendors or
+distributors are identified by their unique TIN number, name, address, contact details.
+The users are identified by their House/ office numbers, address. The capacity of
+the panels depends on the number of members in the installed place. So, there can be
+multiple installation of panels from different vendors in the same place.
+
+Consider a scenario on Solar Energy domain given above and perform the
+following
+
+1. Identify the Entities, attributes, relationships, cardinality, and Participation
+2. Design the ER diagram and map it to schema diagram
+3. Create the tables and populated them with appropriate data
+4. Design the solution for the following
+i. List the distributor with most installations in domestic places
+ii. List the place name with highest capacity panel installed
+iii. Display the area where monocrystalline panels are installed
+iv. For the specific area display the total installation charges for both type of PV
+modules
+v. List the details of distributors and panel that is the oldest installation
+vi. Find the average sales of both type of panels in only commercial places
+
+## Table creation
+
+```sql
+create table panel(
+	pvno varchar(10),
+	ptype varchar(20),
+	capacity int,
+	price decimal(10,2),
+	primary key(pvno)
+);
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/72edaf96-0367-4815-8021-13a89afd8a47/Untitled.png)
+
+```sql
+INSERT INTO panel (pvno, ptype, capacity, price)
+VALUES
+    ('PV001', 'Monocrystalline', 5, 40000.00),
+    ('PV002', 'Polycrystalline', 5, 60000.00),
+    ('PV003', 'Monocrystalline', 10, 40000.00),
+    ('PV004', 'Polycrystalline', 10, 60000.00),
+    ('PV005', 'Monocrystalline', 7, 40000.00),
+    ('PV006', 'Polycrystalline', 7, 60000.00),
+    ('PV007', 'Monocrystalline', 8, 40000.00),
+    ('PV008', 'Polycrystalline', 8, 60000.00),
+    ('PV009', 'Monocrystalline', 12, 40000.00),
+    ('PV010', 'Polycrystalline', 12, 60000.00),
+    ('PV011', 'Monocrystalline', 15, 40000.00),
+    ('PV012', 'Polycrystalline', 15, 60000.00),
+    ('PV013', 'Monocrystalline', 6, 40000.00),
+    ('PV014', 'Polycrystalline', 6, 60000.00),
+    ('PV015', 'Monocrystalline', 9, 40000.00),
+    ('PV016', 'Polycrystalline', 9, 60000.00),
+    ('PV017', 'Monocrystalline', 11, 40000.00),
+    ('PV018', 'Polycrystalline', 11, 60000.00),
+    ('PV019', 'Monocrystalline', 14, 40000.00),
+    ('PV020', 'Polycrystalline', 14, 60000.00);
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/a1dd4a95-3d4b-47ca-973f-292e50320259/Untitled.png)
+
+```sql
+create table vendor(
+	tin varchar(10),
+	name varchar(255),
+	adress varchar(255),
+	contact bigint ,
+	primary key(tin)
+);
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/5fa2ee75-3a66-4940-b2db-97991fcc4879/Untitled.png)
+
+```sql
+INSERT INTO vendor (tin, name, adress, contact)
+VALUES
+    ('TIN001', 'SolarTech', 'Bangalore', 1234567890),
+    ('TIN002', 'SunPower', 'Mysore', 9876543210),
+    ('TIN003', 'GreenEnergy', 'Hubli', 5551234567),
+    ('TIN004', 'SolarWise', 'Mangalore', 9998887777),
+    ('TIN005', 'EcoSolar', 'Bangalore', 1112223333),
+    ('TIN006', 'SolarEco', 'Belgaum', 4445556666),
+    ('TIN007', 'Sunshine', 'Bangalore', 7778889999),
+    ('TIN008', 'GreenPower', 'Mysore', 3334445555),
+    ('TIN009', 'SolarWorld', 'Hubli', 2221113333),
+    ('TIN010', 'SunnyDays', 'Mangalore', 6667778888),
+    ('TIN011', 'EcoFriendly', 'Bangalore', 5554443333),
+    ('TIN012', 'SolarTech', 'Belgaum', 9991112222),
+    ('TIN013', 'GreenSun', 'Mysore', 8889991111),
+    ('TIN014', 'BrightSolar', 'Mangalore', 2223334444),
+    ('TIN015', 'SunEnergy', 'Bangalore', 7776665555),
+    ('TIN016', 'EcoPower', 'Hubli', 3332221111),
+    ('TIN017', 'SolarEco', 'Mysore', 6665554444),
+    ('TIN018', 'GreenTech', 'Belgaum', 1119998888),
+    ('TIN019', 'SunTech', 'Bangalore', 8881119999),
+    ('TIN020', 'SolarBright', 'Mangalore', 5556667777);
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/60d3ac9f-7452-447b-9522-ab49c765d5b7/Untitled.png)
+
+```sql
+create table user(
+	hid varchar(10),
+	name varchar(255),
+	adress varchar(255),
+	primary key(hid)
+);
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/2439dab5-7571-47b5-8496-2ceb7b0c479d/Untitled.png)
+
+```sql
+INSERT INTO user (hid, name, adress)
+VALUES
+    ('HID001', 'John', 'Bangalore'),
+    ('HID002', 'Alice', 'Mysore'),
+    ('HID003', 'Bob', 'Hubli'),
+    ('HID004', 'John', 'Mangalore'),
+    ('HID005', 'Eva', 'Bangalore'),
+    ('HID006', 'Charlie', 'Belgaum'),
+    ('HID007', 'John', 'Bangalore'),
+    ('HID008', 'Grace', 'Mysore'),
+    ('HID009', 'David', 'Hubli'),
+    ('HID010', 'John', 'Mangalore');
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/e03029e9-4d13-4eee-99d4-ceca990c16ef/Untitled.png)
+
+```sql
+create table soldby (
+	pvno varchar(10),
+	tin varchar(10),
+	primary key (pvno,tin),
+	foreign key (pvno) references panel(pvno),
+	foreign key (tin) references vendor(tin)
+);
+```
+
+```sql
+INSERT INTO soldby (pvno, tin)
+VALUES
+    ('PV001', 'TIN001'),
+    ('PV002', 'TIN002'),
+    ('PV003', 'TIN003'),
+    ('PV004', 'TIN004'),
+    ('PV005', 'TIN005'),
+    ('PV006', 'TIN006'),
+    ('PV007', 'TIN007'),
+    ('PV008', 'TIN008'),
+    ('PV009', 'TIN009'),
+    ('PV010', 'TIN010'),
+    ('PV011', 'TIN001'), -- Repeating TIN001
+    ('PV012', 'TIN002'), -- Repeating TIN002
+    ('PV013', 'TIN003'), -- Repeating TIN003
+    ('PV014', 'TIN004'), -- Repeating TIN004
+    ('PV015', 'TIN005'), -- Repeating TIN005
+    ('PV016', 'TIN006'), -- Repeating TIN006
+    ('PV017', 'TIN007'), -- Repeating TIN007
+    ('PV018', 'TIN008'), -- Repeating TIN008
+    ('PV019', 'TIN009'), -- Repeating TIN009
+    ('PV020', 'TIN010'); -- Repeating TIN010
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/b1a16f3e-9919-4792-a2ed-061156dee0f1/Untitled.png)
+
+```sql
+create table purchase (
+	hid varchar(10),
+	pvno varchar(10),
+	primary key (pvno,hid),
+	foreign key (pvno) references panel(pvno),
+	foreign key (hid) references user(hid)
+);
+
+```
+
+```sql
+INSERT INTO purchase (pvno, hid)
+VALUES
+    ('PV001', 'HID001'), -- User1 purchases Monocrystalline
+    ('PV002', 'HID002'), -- User2 purchases Polycrystalline
+    ('PV003', 'HID003'), -- User3 purchases Monocrystalline
+    ('PV004', 'HID004'), -- User4 purchases Polycrystalline
+    ('PV005', 'HID005'), -- User5 purchases Monocrystalline
+    ('PV006', 'HID006'), -- User6 purchases Polycrystalline
+    ('PV007', 'HID007'), -- User7 purchases Monocrystalline
+    ('PV008', 'HID008'), -- User8 purchases Polycrystalline
+    ('PV009', 'HID009'), -- User9 purchases Monocrystalline
+    ('PV010', 'HID010'); -- User10 purchases Polycrystalline
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/e0f5df4f-c2b1-4b2a-951f-9c0ea1f88c8a/Untitled.png)
+
+```sql
+create table install (
+	pvno varchar(10),
+	tin varchar(10),
+	hid varchar(10),
+	cost decimal(10,2),
+	type varchar(10),
+	doi date,
+	foreign key (pvno) references panel(pvno),
+	foreign key (tin) references vendor(tin),
+	foreign key (hid) references user(hid)
+);
+```
+
+```sql
+-- Insert sample data into the "install" table with type (Domestic/Commercial) and installation cost including extra cost for each vendor
+INSERT INTO install (pvno, tin, hid, cost, type, doi)
+VALUES
+    ('PV001', 'TIN001', 'HID001', 40000.00, 'Domestic', '2023-08-15'),
+    ('PV002', 'TIN002', 'HID002', 60000.00, 'Commercial', '2023-08-10'),
+    ('PV003', 'TIN003', 'HID003', 42000.00, 'Domestic', '2023-08-12'), -- Additional cost for TIN003
+    ('PV004', 'TIN004', 'HID004', 61000.00, 'Commercial', '2023-08-05'), -- Additional cost for TIN004
+    ('PV005', 'TIN005', 'HID005', 43000.00, 'Domestic', '2023-08-20'), -- Additional cost for TIN005
+    ('PV006', 'TIN006', 'HID006', 62000.00, 'Commercial', '2023-08-25'), -- Additional cost for TIN006
+    ('PV007', 'TIN007', 'HID007', 44000.00, 'Domestic', '2023-08-08'), -- Additional cost for TIN007
+    ('PV008', 'TIN008', 'HID008', 63000.00, 'Commercial', '2023-08-22'), -- Additional cost for TIN008
+    ('PV009', 'TIN009', 'HID009', 45000.00, 'Domestic', '2023-08-18'), -- Additional cost for TIN009
+    ('PV010', 'TIN010', 'HID010', 64000.00, 'Commercial', '2023-08-30'); -- Additional cost for TIN010
+```
+
+![Untitled](https://prod-files-secure.s3.us-west-2.amazonaws.com/cc626787-0152-4839-b617-1d54abd79d11/d0cbec07-b280-4f11-b79d-827411264f6d/Untitled.png)
+
+1) List the distributor with most installations in domestic places
+
+```sql
+SELECT
+    v.name AS distributor_name,
+    (
+        SELECT COUNT(i.tin)
+        FROM install i
+        WHERE i.tin = v.tin AND i.type = 'Domestic'
+    ) AS domestic_installations_count
+FROM
+    vendor v
+HAVING
+    domestic_installations_count = (
+        SELECT MAX(domestic_count)
+        FROM (
+            SELECT COUNT(i.tin) AS domestic_count
+            FROM install i
+            WHERE i.type = 'Domestic'
+            GROUP BY i.tin
+        ) AS domestic_counts
+    );
+```
+
+2List the place name with highest capacity panel installed
+
+```sql
+SELECT
+    u.adress AS place_name,
+    MAX(p.capacity) AS highest_capacity
+FROM
+    user u,
+    purchase pu,
+    panel p
+WHERE
+    u.hid = pu.hid
+    AND pu.pvno = p.pvno
+GROUP BY
+    u.adress
+ORDER BY
+    highest_capacity DESC
+LIMIT 1;
+
+```
+
+3) Display the area where monocrystalline panels are installed
+
+```sql
+SELECT DISTINCT
+    u.adress AS area
+FROM
+    user u,
+    purchase pu,
+    panel p
+WHERE
+    u.hid = pu.hid
+    AND pu.pvno = p.pvno
+    AND p.ptype = 'Monocrystalline';
+```
+
+4) For the specific area display the total installation charges for both type of PV
+modules
+
+```sql
+SELECT
+    u.adress AS area,
+    SUM(i.cost) AS total_installation_cost
+FROM
+    user u,
+    install i
+WHERE
+    u.hid = i.hid
+    AND u.adress = 'Hubli'
+GROUP BY
+    u.adress;
+```
+
+5)  List the details of distributors and panel that is the oldest installation
+
+```sql
+SELECT
+    v.name AS distributor_name,
+    p.pvno AS panel_number,
+    i.doi AS installation_date
+FROM
+    vendor v,
+    soldby s,
+    install i,
+    panel p
+WHERE
+    v.tin = s.tin
+    AND s.pvno = i.pvno
+    AND i.pvno = p.pvno
+    AND i.doi = (SELECT MIN(doi) FROM install)
+	LIMIT 1;
+```
+
+6) Find the average sales of both type of panels in only commercial places
+
+SELECT
+    (
+			SELECT AVG(cost) FROM install i, panel p 
+			WHERE i.pvno = p.pvno AND i.type = 'Commercial' AND p.ptype = 'Monocrystalline'
+		) AS average_monocrystalline_sales,
+    (
+			SELECT AVG(cost) FROM install i, panel p
+			WHERE i.pvno = p.pvno AND i.type = 'Commercial' AND p.ptype = 'Polycrystalline'
+		) AS average_polycrystalline_sales;
