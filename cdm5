@@ -1,0 +1,107 @@
+import pymongo
+from bson import ObjectId  # Import ObjectId from bson
+
+# Connect to MongoDB
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+db = myclient['hospital']
+
+# Function to create a patient document
+def create_patient():
+    patients_collection = db['patients']
+    patient_data = {
+        "first_name": input("Enter first name: "),
+        "last_name": input("Enter last name: "),
+        "date_of_birth": input("Enter date of birth (YYYY-MM-DD): "),
+        "gender": input("Enter gender: "),
+        "address": input("Enter address: "),
+        "phone": input("Enter phone number: "),
+        "email": input("Enter email address: "),
+        "emergency_contact": {
+            "name": input("Enter emergency contact name: "),
+            "relationship": input("Enter emergency contact relationship: "),
+            "phone": input("Enter emergency contact phone number: ")
+        },
+        "admission_date": input("Enter admission date (YYYY-MM-DD): "),
+        "doctor_id": input("Enter doctor's ObjectId: "),
+        "diagnosis": input("Enter diagnosis: "),
+        "prescriptions": [
+            {
+                "medication": input("Enter medication: "),
+                "dosage": input("Enter dosage: "),
+                "instructions": input("Enter instructions: ")
+            }
+        ]
+    }
+    patients_collection.insert_one(patient_data)
+    print("Patient document created.")
+
+# Function to retrieve all patient documents
+def retrieve_patients():
+    patients_collection = db['patients']
+    for patient in patients_collection.find():
+        print(patient)
+
+# Function to update a patient document
+def update_patient():
+    patients_collection = db['patients']
+    patient_id_str = input("Enter patient's ObjectId to update: ")
+    
+    try:
+        patient_id = ObjectId(patient_id_str)  # Convert the input string to ObjectId
+    except Exception as e:
+        print("Invalid ObjectId format. Please enter a valid ObjectId.")
+        return
+
+    updated_data = {
+        "$set": {
+            "diagnosis": input("Enter updated diagnosis: ")
+        }
+    }
+    result = patients_collection.update_one({"_id": patient_id}, updated_data)
+
+    if result.modified_count == 1:
+        print("Patient document updated.")
+    else:
+        print("Patient document not found or not updated.")
+
+# Function to delete a patient document
+def delete_patient():
+    patients_collection = db['patients']
+    patient_id_str = input("Enter patient's ObjectId to delete: ")
+
+    try:
+        patient_id = ObjectId(patient_id_str)  # Convert the input string to ObjectId
+    except Exception as e:
+        print("Invalid ObjectId format. Please enter a valid ObjectId.")
+        return
+
+    result = patients_collection.delete_one({"_id": patient_id})
+
+    if result.deleted_count == 1:
+        print("Patient document deleted.")
+    else:
+        print("Patient document not found or not deleted.")
+
+# Main menu loop
+while True:
+    print("=" * 30)
+    print("MENU")
+    print("1. Create Patient")
+    print("2. Retrieve Patients")
+    print("3. Update Patient")
+    print("4. Delete Patient")
+    print("5. Exit")
+    choice = input("Enter your choice: ")
+
+    if choice == '1':
+        create_patient()
+    elif choice == '2':
+        retrieve_patients()
+    elif choice == '3':
+        update_patient()
+    elif choice == '4':
+        delete_patient()
+    elif choice == '5':
+        break
+    else:
+        print("Invalid choice. Please try again.")
