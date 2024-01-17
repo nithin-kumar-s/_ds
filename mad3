@@ -1,0 +1,40 @@
+public class MainActivity extends AppCompatActivity {
+
+    EditText send_text;
+    Button btn;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
+        send_text=findViewById(R.id.editTextText);
+        btn=findViewById(R.id.button);
+
+        btn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String string=send_text.getText().toString();
+                Intent intent=new Intent(getApplicationContext(),SecondActivity.class);
+                intent.putExtra("message",string);
+
+                startActivity(intent);
+            }
+        });
+    }
+}
+
+
+public class SecondActivity extends AppCompatActivity {
+
+    TextView txt_view;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_second);
+        txt_view=findViewById(R.id.textView3);
+        Intent intent=getIntent();
+        String str=intent.getStringExtra("message");
+        txt_view.setText(str);
+    }
+}
